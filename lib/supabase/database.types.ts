@@ -1,0 +1,6 @@
+export type Json=string|number|boolean|null|{[key:string]:Json|undefined}|Json[];
+export type GameStatus='lobby'|'running'|'paused'|'reveal'|'finished';
+type Rpc<Args>={Args:Args;Returns:Json};
+type SnapshotArgs={p_host_secret:string};
+type HostSnapshotRpc=Rpc<SnapshotArgs>;
+export type Database={public:{Tables:{room_signals:{Row:{room_code:string;state_version:number;updated_at:string};Insert:{room_code:string;state_version:number;updated_at?:string};Update:{room_code?:string;state_version?:number;updated_at?:string};Relationships:[]}};Views:Record<never,never>;Functions:{create_room:Rpc<{p_questions:Json}>;get_host_snapshot:HostSnapshotRpc;finalize_expired_question:Rpc<{p_code:string}>;save_questions:Rpc<{p_host_secret:string;p_questions:Json}>;join_room:Rpc<{p_code:string;p_name:string;p_participant_secret:string|null}>;get_player_snapshot:Rpc<{p_code:string;p_participant_secret:string}>;submit_answer:Rpc<{p_code:string;p_participant_secret:string;p_question_id:string;p_option_index:number}>;start_question:HostSnapshotRpc;pause_question:HostSnapshotRpc;resume_question:HostSnapshotRpc;reveal_question:HostSnapshotRpc;advance_question:HostSnapshotRpc;finish_game:HostSnapshotRpc;reset_game:HostSnapshotRpc}}};

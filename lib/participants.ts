@@ -1,0 +1,3 @@
+export type NamedParticipant={id:string;name:string};
+function normalized(name:string){return name.trim().replace(/\s+/g,' ').toLocaleLowerCase('ru')}
+export function participantLabels(participants:NamedParticipant[]){const totals=new Map<string,number>();for(const p of participants){const key=normalized(p.name);totals.set(key,(totals.get(key)??0)+1)}const seen=new Map<string,number>();return new Map(participants.map(p=>{const key=normalized(p.name);const index=(seen.get(key)??0)+1;seen.set(key,index);const clean=p.name.trim().replace(/\s+/g,' ');return[p.id,(totals.get(key)??0)>1?`${clean} · ${index}`:clean]}))}

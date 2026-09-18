@@ -1,0 +1,5 @@
+-- Canonical schema lives in:
+-- supabase/migrations/202609160001_secure_quiz_mvp.sql
+--
+-- This placeholder intentionally replaces the old insecure prototype. Apply the
+-- migration to a new Supabase project through SQL Editor or Supabase CLI.

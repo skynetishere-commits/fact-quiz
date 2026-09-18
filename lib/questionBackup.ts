@@ -1,0 +1,8 @@
+import {z} from 'zod';import {questionsSchema,type QuizQuestion} from './questions';
+const draftQuestionSchema=z.object({id:z.string().min(1),fact:z.string(),options:z.array(z.string()).min(1).max(10),correctIndex:z.number().int().nonnegative(),durationSeconds:z.number().finite()});
+export const draftQuestionsSchema=z.array(draftQuestionSchema).min(1).refine(items=>new Set(items.map(q=>q.id)).size===items.length,{message:'ID вопросов должны быть уникальны'});
+const envelopeSchema=z.object({kind:z.literal('fact-quiz-question-backup'),version:z.literal(1),exportedAt:z.string(),questions:draftQuestionsSchema});
+export type QuestionBackup=z.infer<typeof envelopeSchema>;export function questionsFingerprint(q:QuizQuestion[]){return JSON.stringify(q)}
+export function serializeQuestionBackup(questions:QuizQuestion[],now=new Date()){return JSON.stringify({kind:'fact-quiz-question-backup',version:1,exportedAt:now.toISOString(),questions},null,2)}
+export function parseQuestionBackup(text:string){if(new Blob([text]).size>1024*1024)throw new Error('Файл больше 1 МБ');let raw:unknown;try{raw=JSON.parse(text)}catch{throw new Error('Файл не является корректным JSON')}const envelope=Array.isArray(raw)?{kind:'fact-quiz-question-backup',version:1,exportedAt:new Date(0).toISOString(),questions:raw}:raw;const draft=envelopeSchema.parse(envelope);questionsSchema.parse(draft.questions);return draft.questions as QuizQuestion[]}
+export function loadDraftBackup(storage:Pick<Storage,'getItem'>,key:string){try{const value=storage.getItem(key);if(!value)return{status:'missing' as const};const questions=parseQuestionBackup(value);return{status:'valid' as const,questions}}catch(error){return{status:'corrupt' as const,error:error instanceof Error?error.message:String(error)}}}

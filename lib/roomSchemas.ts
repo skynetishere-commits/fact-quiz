@@ -1,0 +1,18 @@
+import {z} from 'zod';
+export const roomCodeSchema=z.string().trim().regex(/^[A-Za-z0-9]{3,12}$/).transform(v=>v.toUpperCase());
+export const secretSchema=z.string().min(16);export const isoTimestampSchema=z.string().datetime({offset:true});
+export const gameStatusSchema=z.enum(['lobby','running','paused','reveal','finished']);
+const baseQuestion={id:z.string().uuid(),fact:z.string().trim().min(1),options:z.array(z.string().trim().min(1)).min(4).max(10),duration_seconds:z.number().int().min(5).max(300),position:z.number().int().nonnegative().optional()};
+export const questionDtoSchema=z.object({...baseQuestion,correct_index:z.number().int().nonnegative()}).refine(q=>q.correct_index<q.options.length,{path:['correct_index'],message:'correct_index must reference an option'});
+export const playerQuestionDtoSchema=z.object({...baseQuestion,correct_index:z.number().int().nonnegative().nullable().optional()}).refine(q=>q.correct_index==null||q.correct_index<q.options.length,{path:['correct_index'],message:'correct_index must reference an option'});
+export const roomStateSchema=z.object({code:roomCodeSchema,status:gameStatusSchema,current_question_id:z.string().uuid().nullable().optional().default(null),state_version:z.number().int().nonnegative(),question_started_at:isoTimestampSchema.nullable(),question_ends_at:isoTimestampSchema.nullable(),paused_remaining_ms:z.number().int().nonnegative().nullable()});
+export const participantSchema=z.object({id:z.string().uuid(),name:z.string().trim().min(1)});
+export const answerDtoSchema=z.object({participant_id:z.string().uuid(),name:z.string().trim().min(1),question_id:z.string().uuid().optional(),option_index:z.number().int().nonnegative()});
+export const createRoomResultSchema=z.object({code:roomCodeSchema,host_secret:secretSchema,expires_at:isoTimestampSchema.optional()});
+export const participantStatSchema=z.object({participant_id:z.string().uuid(),name:z.string().trim().min(1),correct_count:z.number().int().nonnegative(),answered_count:z.number().int().nonnegative(),total_questions:z.number().int().nonnegative()});
+export const hostSnapshotDtoSchema=z.object({server_time:isoTimestampSchema,room:roomStateSchema,questions:z.array(questionDtoSchema).min(1),participants:z.array(participantSchema),answered_count:z.number().int().nonnegative(),answers:z.array(answerDtoSchema),participant_stats:z.array(participantStatSchema)});
+export const joinRoomResultSchema=z.object({code:roomCodeSchema,participant_id:z.string().uuid(),participant_secret:secretSchema});
+export const playerSnapshotDtoSchema=z.object({server_time:isoTimestampSchema,room:roomStateSchema,participant:participantSchema,question:playerQuestionDtoSchema.nullable(),own_answer:z.object({option_index:z.number().int().nonnegative()}).nullable(),answers:z.array(answerDtoSchema),participant_stats:z.array(participantStatSchema)});
+export const answerResultSchema=z.object({accepted:z.literal(true),option_index:z.number().int().nonnegative()});
+export const finalizeExpiredResultSchema=z.object({finalized:z.boolean(),state_version:z.number().int().nonnegative()});
+export type QuestionDto=z.infer<typeof questionDtoSchema>;export type RoomState=z.infer<typeof roomStateSchema>;export type Participant=z.infer<typeof participantSchema>;

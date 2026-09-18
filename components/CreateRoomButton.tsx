@@ -1,0 +1,4 @@
+'use client';
+import {useState} from 'react';import {useRouter} from 'next/navigation';
+import {defaultQuestions} from '../lib/questions';import {createQuizRepository} from '../lib/quizRepository';
+export function CreateRoomButton(){const router=useRouter();const [busy,setBusy]=useState(false);const [error,setError]=useState('');async function create(){setBusy(true);setError('');try{const room=await createQuizRepository().createRoom(defaultQuestions);router.push(`/host/${room.hostSecret}`)}catch(e){setError(e instanceof Error?e.message:'Не удалось создать комнату');setBusy(false)}}return <div className="create-room"><button className="btn" disabled={busy} onClick={create}>{busy?'Создаём комнату…':'Я ведущий'} <span>→</span></button>{error&&<div className="inline-error" role="alert">{error}</div>}</div>}

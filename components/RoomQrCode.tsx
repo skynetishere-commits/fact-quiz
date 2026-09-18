@@ -1,0 +1,3 @@
+'use client';
+import {useEffect,useState} from 'react';import QRCode from 'qrcode';
+export function RoomQrCode({value}:{value:string}){const [svg,setSvg]=useState('');const [error,setError]=useState('');useEffect(()=>{let active=true;QRCode.toString(value,{type:'svg',margin:1,width:220,color:{dark:'#071b17',light:'#effaf4'}}).then(result=>{if(active)setSvg(result)}).catch(()=>{if(active)setError('Не удалось создать QR-код')});return()=>{active=false}},[value]);if(error)return <div className="qr-error" role="alert">{error}</div>;return <div className="qr-code" aria-label="QR-код ссылки для входа" dangerouslySetInnerHTML={{__html:svg}}/>}
