@@ -19,6 +19,18 @@ Realtime-веб-квиз: ведущий управляет вопросами �
 
 До создания проекта Supabase сетевые маршруты показывают инструкцию настройки. Старые демонстрационные комнаты вроде `EMERALD42` больше не являются настоящими комнатами.
 
+## Production
+
+Текущий Vercel deployment:
+
+[https://fact-quiz-fosnebv6u-victors-projects-248c7e74.vercel.app](https://fact-quiz-fosnebv6u-victors-projects-248c7e74.vercel.app)
+
+Репозиторий:
+
+[https://github.com/skynetishere-commits/fact-quiz](https://github.com/skynetishere-commits/fact-quiz)
+
+Каждый push в ветку `master` запускает новый production deployment Vercel.
+
 ## Технологии
 
 - Next.js 16 / React 19 / TypeScript
