@@ -1,0 +1,2 @@
+import {NextResponse} from 'next/server';import {HOST_SESSION_COOKIE,validRequestOrigin} from '../../../../lib/hostAuth';
+export async function POST(request:Request){if(!validRequestOrigin(request))return NextResponse.json({error:'forbidden'},{status:403,headers:{'Cache-Control':'no-store'}});const response=NextResponse.json({ok:true},{headers:{'Cache-Control':'no-store'}});response.cookies.set({name:HOST_SESSION_COOKIE,value:'',httpOnly:true,secure:process.env.NODE_ENV==='production',sameSite:'strict',path:'/',maxAge:0});return response}

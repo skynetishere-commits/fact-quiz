@@ -391,7 +391,7 @@ begin r:=public.room_for_host(p_host_secret); if r.id is null then raise excepti
 $$;
 
 revoke execute on all functions in schema public from public;
-grant execute on function public.create_room(jsonb) to anon, authenticated;
+grant execute on function public.create_room(jsonb) to service_role;
 grant execute on function public.get_host_snapshot(text) to anon, authenticated;
 grant execute on function public.finalize_expired_question(text) to anon, authenticated;
 grant execute on function public.save_questions(text,jsonb) to anon, authenticated;
